@@ -12,10 +12,16 @@ module.exports.getUserID = (req, res) => {
     .then(user => {
       if (!user) {
         return res.status(STATUS_NOT_FOUND).send({ message: `Пользователь не найден` })
-      } else { return res.status(STATUS_OK).send(user) }
+      } else {
+        return res.status(STATUS_OK).send(user)
+      }
     })
     .catch(err => {
-      return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` })
+      if (err.name === 'CastError') {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Пользователь не найден` })
+      } else {
+        return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` })
+      }
     });
 };
 

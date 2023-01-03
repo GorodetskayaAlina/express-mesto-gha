@@ -21,12 +21,18 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then(card => {if (!card) {
-      return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
-    } else
-      {res.status(STATUS_OK).send(card)}
+    .then(card => {
+      if (!card) {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+      } else { res.status(STATUS_OK).send(card) }
     })
-    .catch(err => res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }));
+    .catch(err => {
+      if (err.name === 'CastError') {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+      } else {
+        return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` })
+      }
+    });
 }
 
 module.exports.likeCard = (req, res) => {
@@ -35,15 +41,18 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true })
     .populate(['owner', 'likes'])
-    .then(card => {if (!card) {
-      return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
-    } else
-      {res.status(STATUS_OK).send(card)}
+    .then(card => {
+      if (!card) {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+      } else { res.status(STATUS_OK).send(card) }
     })
     .catch(err => {
       if (err.name === 'ValidationError') {
         return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
-      } else { return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }) }
+      } else if (err.name === 'CastError') {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+      }
+      else { return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }) }
     });
 }
 
@@ -53,14 +62,17 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true })
     .populate(['owner', 'likes'])
-    .then(card => {if (!card) {
-      return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
-    } else
-      {res.status(STATUS_OK).send(card)}
+    .then(card => {
+      if (!card) {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+      } else { res.status(STATUS_OK).send(card) }
     })
     .catch(err => {
       if (err.name === 'ValidationError') {
         return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
-      } else { return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }) }
+      } else if (err.name === 'CastError') {
+        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+      }
+      else { return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }) }
     });
 }
