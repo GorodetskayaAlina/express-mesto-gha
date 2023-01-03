@@ -9,12 +9,12 @@ app.use(bodyParser.json());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '63b3f6fe6e5e23670e0e7e56'
+    _id: '63b3f6fe6e5e23670e0e7e56',
   };
 
   next();
@@ -23,10 +23,8 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use('*', (req, res, next) => {
-  return res.status(STATUS_NOT_FOUND).send({ message: `Страница не найдена` })
-});
+app.use('*', (req, res) => res.status(STATUS_NOT_FOUND).send({ message: 'Страница не найдена' }));
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
-})
+  console.log(`App listening on port ${PORT}`);
+});
