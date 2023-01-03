@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch(err => {
       if (err.name === 'CastError') {
-        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+        return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
       } else {
         return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` })
       }
@@ -50,7 +50,7 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
       } else if (err.name === 'CastError') {
-        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+        return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
       }
       else { return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }) }
     });
@@ -71,7 +71,7 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
       } else if (err.name === 'CastError') {
-        return res.status(STATUS_NOT_FOUND).send({ message: `Карточка не найдена` })
+        return res.status(STATUS_VALIDATION).send({ message: `Переданы некорректные данные` })
       }
       else { return res.status(STATUS_SERVER).send({ message: `Произошла ошибка на сервере` }) }
     });
