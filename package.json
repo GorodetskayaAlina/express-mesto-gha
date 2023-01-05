@@ -2,18 +2,18 @@
   "name": "express-mesto-gha",
   "version": "1.0.0",
   "description": "[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)\r # Проект Mesto фронтенд + бэкенд",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint"
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GorodetskayaAlina/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gorodetskaya Alina",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/GorodetskayaAlina/express-mesto-gha/issues"
@@ -21,12 +21,8 @@
   "homepage": "https://github.com/GorodetskayaAlina/express-mesto-gha#readme",
   "devDependencies": {
     "eslint": "^8.31.0",
-    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.1",
-    "eslint-plugin-react": "^7.31.11",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "nodemon": "^2.0.20"
   },
   "dependencies": {

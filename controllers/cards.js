@@ -5,7 +5,6 @@ const {
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .populate(['owner', 'likes'])
     .then((card) => res.status(STATUS_OK).send(card))
     .catch(() => res.status(STATUS_SERVER).send({ message: 'Произошла ошибка на сервере' }));
 };
@@ -43,7 +42,6 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
         res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
@@ -64,7 +62,6 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
         res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
