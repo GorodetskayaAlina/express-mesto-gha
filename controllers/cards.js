@@ -1,42 +1,51 @@
 const Card = require('../models/card');
 const {
-  STATUS_OK, STATUS_VALIDATION, STATUS_NOT_FOUND, STATUS_SERVER,
+  STATUS_OK,
 } = require('../constants');
+const ValidationError = require('../errors/ValidationError');
+const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((card) => res.status(STATUS_OK).send(card))
-    .catch(() => res.status(STATUS_SERVER).send({ message: 'Произошла ошибка на сервере' }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(STATUS_OK).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(STATUS_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else { res.status(STATUS_SERVER).send({ message: 'Произошла ошибка на сервере' }); }
+        next(new ValidationError('Переданы некорректные данные'));
+      } else { next(err); }
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
-      } else { res.status(STATUS_OK).send(card); }
+        next(new NotFoundError('Карточка не найдена'));
+      } else if (card.owner.valueOf() !== req.user._id) {
+        next(new ForbiddenError('Нельзя удалить чужую карточку'));
+      } else {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then((deletedCard) => { res.status(STATUS_OK).send(deletedCard); })
+          .catch(next);
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(STATUS_VALIDATION).send({ message: 'Переданы некорректные данные' });
+        next(new ValidationError('Переданы некорректные данные'));
       } else {
-        res.status(STATUS_SERVER).send({ message: 'Произошла ошибка на сервере' });
+        next(err);
       }
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -44,19 +53,19 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        next(new NotFoundError('Карточка не найдена'));
       } else { res.status(STATUS_OK).send(card); }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(STATUS_VALIDATION).send({ message: 'Переданы некорректные данные' });
+        next(new ValidationError('Переданы некорректные данные'));
       } else if (err.name === 'CastError') {
-        res.status(STATUS_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else { res.status(STATUS_SERVER).send({ message: 'Произошла ошибка на сервере' }); }
+        next(new ValidationError('Переданы некорректные данные'));
+      } else { next(err); }
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -64,14 +73,14 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        next(new NotFoundError('Карточка не найдена'));
       } else { res.status(STATUS_OK).send(card); }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(STATUS_VALIDATION).send({ message: 'Переданы некорректные данные' });
+        next(new ValidationError('Переданы некорректные данные'));
       } else if (err.name === 'CastError') {
-        res.status(STATUS_VALIDATION).send({ message: 'Переданы некорректные данные' });
-      } else { res.status(STATUS_SERVER).send({ message: 'Произошла ошибка на сервере' }); }
+        next(new ValidationError('Переданы некорректные данные'));
+      } else { next(err); }
     });
 };
