@@ -55,8 +55,8 @@ const validationUpdateAvatar = celebrate({
 // создание карточек
 const validationCreateCard = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    link: Joi.string().custom((value, helpers) => {
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().custom((value, helpers) => {
       if (validator.isURL(value)) {
         return value;
       }

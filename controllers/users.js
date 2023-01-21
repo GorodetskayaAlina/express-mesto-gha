@@ -73,13 +73,10 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       return res.send({ token });
     })
-    .catch((err) => {
-      if (err.name === 'UnauthorizedError') {
-        next(new UnauthorizedError('Неправильные почта или пароль'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(() => {
+      next(new UnauthorizedError('Неправильные почта или пароль'));
+    })
+    .catch(next);
 };
 
 module.exports.getProfile = (req, res, next) => {
