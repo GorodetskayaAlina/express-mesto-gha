@@ -62,7 +62,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user || !password) {
+      if (!email || !password) {
         next(new UnauthorizedError('Неправильные почта или пароль'));
       }
 
