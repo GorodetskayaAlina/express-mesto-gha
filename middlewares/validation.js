@@ -5,7 +5,7 @@ const validator = require('validator');
 const validationCreateUser = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom((value, helpers) => {
@@ -21,7 +21,7 @@ const validationCreateUser = celebrate({
 const validationLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
@@ -35,15 +35,15 @@ const validationGetUserID = celebrate({
 // обновление профиля
 const validationUpdateProfile = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
 });
 
 // обновление аватара
 const validationUpdateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().custom((value, helpers) => {
+    avatar: Joi.string().required().custom((value, helpers) => {
       if (validator.isURL(value)) {
         return value;
       }

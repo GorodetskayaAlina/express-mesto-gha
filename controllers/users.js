@@ -38,10 +38,6 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  if (!email || !password) {
-    next(new ValidationError('Переданы некорректные данные'));
-  }
-
   bcrypt.hash(password, SALT_ROUND)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
@@ -64,17 +60,14 @@ module.exports.createUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    next(new ValidationError('Переданы некорректные данные'));
-  }
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user || !password) {
+        next(new UnauthorizedError('Неправильные почта или пароль'));
+      }
+
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       return res.send({ token });
-    })
-    .catch(() => {
-      next(new UnauthorizedError('Неправильные почта или пароль'));
     })
     .catch(next);
 };

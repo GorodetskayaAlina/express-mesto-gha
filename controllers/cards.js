@@ -57,9 +57,7 @@ module.exports.likeCard = (req, res, next) => {
       } else { res.status(STATUS_OK).send(card); }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new ValidationError('Переданы некорректные данные'));
       } else { next(err); }
     });
@@ -77,9 +75,7 @@ module.exports.dislikeCard = (req, res, next) => {
       } else { res.status(STATUS_OK).send(card); }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new ValidationError('Переданы некорректные данные'));
       } else { next(err); }
     });
